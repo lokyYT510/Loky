@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Evolve Server Security | Minecraft Infrastructure Defense</title>
+<meta name="description" content="Evolve Server Security — DDoS protection, Linux hardening, and network security built for Minecraft server operators.">
+
+<style>
+  :root{
+    --bg: #050b0d;
+    --panel: #0a1518;
+    --panel-2: #0d1b1f;
+    --line: rgba(0, 240, 255, 0.16);
+    --cyan: #00f0ff;
+    --cyan-dim: #0aa8b5;
+    --mint: #35f2b0;
+    --alert: #ff3868;
+    --text: #cdeef2;
+    --text-dim: #7fa3a8;
+    --font-display: 'Rajdhani', 'Segoe UI', sans-serif;
+    --font-body: 'Inter', 'Segoe UI', sans-serif;
+    --font-mono: 'JetBrains Mono', 'Consolas', monospace;
+  }
+
+  *{ margin:0; padding:0; box-sizing:border-box; }
+
+  html{ scroll-behavior: smooth; }
+
+  body{
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+    line-height: 1.6;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  /* ambient grid + scanline backdrop */
+  body::before{
+    content:"";
+    position: fixed;
+    inset:0;
+    z-index:0;
+    pointer-events:none;
+    background-image:
+      linear-gradient(rgba(0,240,255,0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,240,255,0.05) 1px, transparent 1px);
+    background-size: 42px 42px;
+    mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, black 30%, transparent 75%);
+  }
+
+  ::selection{ background: var(--cyan); color: #001417; }
+
+  a{ color: inherit; text-decoration:none; }
+  ul{ list-style:none; }
+  img{ display:block; max-width:100%; }
+
+  .wrap{
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 0 24px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .eyebrow{
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--cyan);
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin-bottom: 14px;
+  }
+  .eyebrow::before{
+    content:"";
+    width:8px; height:8px;
+    background: var(--cyan);
+    box-shadow: 0 0 10px var(--cyan), 0 0 20px var(--cyan);
+    display:inline-block;
+  }
+
+  h1,h2,h3,h4{
+    font-family: var(--font-display);
+    font-weight: 700;
+    letter-spacing: 0.4px;
+  }
+
+  /* ---------- NAV ---------- */
+  header{
+    position: sticky;
+    top:0;
+    z-index: 100;
+    background: rgba(5,11,13,0.82);
+    backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--line);
+  }
+  .nav{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding: 16px 24px;
+    max-width: 1180px;
+    margin: 0 auto;
+  }
+  .brand{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    font-family: var(--font-display);
+    font-weight:700;
+    font-size: 20px;
+    letter-spacing: 1px;
+    color: var(--text);
+  }
+  .brand .hexmark{
+    width:30px; height:30px;
+    position:relative;
+  }
+  .brand .hexmark svg{ width:100%; height:100%; }
+  .brand span.accent{ color: var(--cyan); text-shadow: 0 0 12px rgba(0,240,255,0.6); }
+
+  .nav-links{
+    display:flex;
+    gap: 32px;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+  .nav-links a{
+    color: var(--text-dim);
+    position:relative;
+    padding: 4px 0;
+    transition: color .25s ease;
+  }
+  .nav-links a::after{
+    content:"";
+    position:absolute; left:0; bottom:-4px;
+    width:0; height:1px;
+    background: var(--cyan);
+    box-shadow: 0 0 8px var(--cyan);
+    transition: width .25s ease;
+  }
+  .nav-links a:hover{ color: var(--cyan); }
+  .nav-links a:hover::after{ width:100%; }
+
+  .nav-cta{
+    display:flex;
+    gap:12px;
+    align-items:center;
+  }
+  .nav-toggle{
+    display:none;
+    background:none;
+    border: 1px solid var(--line);
+    color: var(--cyan);
+    width:40px; height:40px;
+    font-size: 20px;
+    cursor:pointer;
+  }
+
+  /* ---------- BUTTONS ---------- */
+  .btn{
+    font-family: var(--font-mono);
+    font-size: 13px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 12px 22px;
+    border: 1px solid var(--cyan);
+    color: var(--cyan);
+    background: rgba(0,240,255,0.04);
+    cursor:pointer;
+    position: relative;
+    transition: all .25s ease;
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+  }
+  .btn:hover{
+    background: var(--cyan);
+    color: #001417;
+    box-shadow: 0 0 24px rgba(0,240,255,0.55);
+  }
+  .btn-solid{
+    background: var(--cyan);
+    color: #001417;
+    box-shadow: 0 0 18px rgba(0,240,255,0.35);
+  }
+  .btn-solid:hover{
+    background: #40f7ff;
+    box-shadow: 0 0 28px rgba(0,240,255,0.7);
+  }
+  .btn-ghost{
+    border-color: var(--line);
+    color: var(--text-dim);
+  }
+  .btn-ghost:hover{
+    color: var(--cyan);
+    border-color: var(--cyan);
+    background: transparent;
+    box-shadow: none;
+  }
+  .btn-discord{
+    border-color: #5865F2;
+    color:#c9cdff;
+    background: rgba(88,101,242,0.08);
+  }
+  .btn-discord:hover{
+    background:#5865F2;
+    color:#fff;
+    box-shadow: 0 0 24px rgba(88,101,242,0.6);
+  }
+
+  /* ---------- HERO ---------- */
+  .hero{
+    position: relative;
+    padding: 140px 0 100px;
+    text-align:center;
+    overflow:hidden;
+  }
+  .hero-grid-glow{
+    position:absolute;
+    top: -200px; left:50%;
+    transform: translateX(-50%);
+    width: 900px; height: 900px;
+    background: radial-gradient(circle, rgba(0,240,255,0.16) 0%, rgba(0,240,255,0) 60%);
+    z-index:0;
+    pointer-events:none;
+  }
+  .hero h1{
+    font-size: clamp(34px, 5.5vw, 64px);
+    line-height: 1.08;
+    max-width: 900px;
+    margin: 0 auto 22px;
+    color: #eafcff;
+  }
+  .hero h1 .glow{
+    color: var(--cyan);
+    text-shadow: 0 0 18px rgba(0,240,255,0.7), 0 0 42px rgba(0,240,255,0.35);
+  }
+  .hero p.lead{
+    max-width: 620px;
+    margin: 0 auto 40px;
+    color: var(--text-dim);
+    font-size: 17px;
+  }
+  .hero-actions{
+    display:flex;
+    gap:16px;
+    justify-content:center;
+    flex-wrap:wrap;
+    margin-bottom: 64px;
+  }
+
+  .pillars{
+    display:grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+    max-width: 980px;
+    margin: 0 auto;
+  }
+  .pillar{
+    background: linear-gradient(180deg, var(--panel), var(--panel-2));
+    border: 1px solid var(--line);
+    padding: 26px 20px;
+    text-align:left;
+    position:relative;
+    transition: transform .3s ease, box-shadow .3s ease, border-color .3s ease;
+  }
+  .pillar::before{
+    content: attr(data-tag);
+    position:absolute;
+    top:-1px; right:-1px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 1px;
+    padding: 4px 8px;
+    background: var(--cyan);
+    color:#001417;
+  }
+  .pillar:hover{
+    transform: translateY(-6px);
+    border-color: var(--cyan);
+    box-shadow: 0 12px 30px rgba(0,240,255,0.14);
+  }
+  .pillar h3{
+    font-size: 19px;
+    margin: 10px 0 8px;
+    color: var(--text);
+  }
+  .pillar p{ color: var(--text-dim); font-size: 14px; }
+  .pillar .picon{
+    width: 34px; height:34px;
+    color: var(--cyan);
+  }
+
+  /* ---------- SECTION SHELL ---------- */
+  section{ padding: 100px 0; position:relative; z-index:1; }
+  .section-head{
+    text-align:center;
+    max-width: 680px;
+    margin: 0 auto 56px;
+  }
+  .section-head h2{
+    font-size: clamp(28px, 4vw, 42px);
+    color: #eafcff;
+  }
+  .section-head p{ color: var(--text-dim); margin-top: 14px; }
+  .divider{
+    width: 60px; height: 2px;
+    background: var(--cyan);
+    box-shadow: 0 0 12px var(--cyan);
+    margin: 18px auto 0;
+  }
+
+  /* ---------- ABOUT ---------- */
+  .about{
+    background: var(--panel);
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+  }
+  .about-inner{
+    display:grid;
+    grid-template-columns: 1.1fr 1fr;
+    gap: 60px;
+    align-items:center;
+  }
+  .about-text h2{
+    font-size: clamp(26px, 4vw, 40px);
+    line-height: 1.2;
+    margin-bottom: 20px;
+  }
+  .about-text .animated-line{
+    display:inline-block;
+    background: linear-gradient(90deg, var(--cyan), var(--mint), var(--cyan));
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: shine 4s linear infinite;
+    font-weight: 700;
+  }
+  @keyframes shine{
+    to{ background-position: -200% center; }
+  }
+  .about-text p{ color: var(--text-dim); margin-bottom: 14px; }
+  .about-stats{
+    display:grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+  .stat-card{
+    border: 1px solid var(--line);
+    background: var(--panel-2);
+    padding: 26px 14px;
+    text-align:center;
+    transition: box-shadow .3s ease, border-color .3s ease;
+  }
+  .stat-card:hover{
+    border-color: var(--cyan);
+    box-shadow: 0 0 26px rgba(0,240,255,0.18);
+  }
+  .stat-num{
+    font-family: var(--font-mono);
+    font-size: 30px;
+    color: var(--cyan);
+    text-shadow: 0 0 14px rgba(0,240,255,0.5);
+  }
+  .stat-label{
+    font-size: 12px;
+    color: var(--text-dim);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-top: 6px;
+  }
+
+  /* ---------- TEAM ---------- */
+  .team-grid{
+    display:grid;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 26px;
+  }
+  .team-card{
+    background: var(--panel);
+    border: 1px solid var(--line);
+    padding: 32px 22px;
+    text-align:center;
+    position:relative;
+    transition: transform .3s ease, box-shadow .3s ease, border-color .3s ease;
+  }
+  .team-card:hover{
+    transform: translateY(-8px);
+    border-color: var(--cyan);
+    box-shadow: 0 16px 34px rgba(0,240,255,0.16);
+  }
+  .avatar-ring{
+    width: 108px; height: 108px;
+    margin: 0 auto 18px;
+    border-radius: 50%;
+    padding: 3px;
+    background: conic-gradient(from 0deg, var(--cyan), transparent 60%, var(--cyan));
+    animation: spin 6s linear infinite;
+  }
+  @keyframes spin{ to{ transform: rotate(360deg); } }
+  .avatar-ring img{
+    width:100%; height:100%;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid var(--bg);
+    background: var(--panel-2);
+  }
+  .team-card h3{ font-size: 19px; color: var(--text); margin-bottom: 4px; }
+  .team-role{
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--cyan);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+  }
+  .team-bio{ color: var(--text-dim); font-size: 13.5px; margin-bottom: 20px; }
+  .team-contact{ display:flex; gap: 10px; justify-content:center; }
+  .icon-btn{
+    width: 38px; height:38px;
+    display:flex; align-items:center; justify-content:center;
+    border: 1px solid var(--line);
+    color: var(--text-dim);
+    transition: all .25s ease;
+  }
+  .icon-btn:hover{
+    border-color: var(--cyan);
+    color: var(--cyan);
+    box-shadow: 0 0 14px rgba(0,240,255,0.4);
+  }
+  .icon-btn svg{ width:16px; height:16px; }
+
+  /* ---------- SERVICES ---------- */
+  .services-grid{
+    display:grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 22px;
+  }
+  .service-card{
+    background: linear-gradient(180deg, var(--panel), var(--panel-2));
+    border: 1px solid var(--line);
+    padding: 28px 24px;
+    position:relative;
+    overflow:hidden;
+    transition: transform .3s ease, border-color .3s ease, box-shadow .3s ease;
+  }
+  .service-card::after{
+    content:"";
+    position:absolute;
+    inset:0;
+    background: linear-gradient(120deg, transparent 40%, rgba(0,240,255,0.08) 50%, transparent 60%);
+    transform: translateX(-120%);
+    transition: transform .6s ease;
+  }
+  .service-card:hover::after{ transform: translateX(120%); }
+  .service-card:hover{
+    transform: translateY(-6px);
+    border-color: var(--cyan);
+    box-shadow: 0 14px 30px rgba(0,240,255,0.14);
+  }
+  .service-index{
+    font-family: var(--font-mono);
+    color: var(--cyan-dim);
+    font-size: 12px;
+    letter-spacing: 2px;
+  }
+  .service-card h3{
+    font-size: 19px;
+    margin: 10px 0 10px;
+    color: var(--text);
+  }
+  .service-card p{ color: var(--text-dim); font-size: 14px; }
+
+  /* ---------- EVOLVE SHIELD ---------- */
+  .shield-section{
+    background: radial-gradient(ellipse at 50% 20%, rgba(0,240,255,0.08), transparent 60%), var(--panel);
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+  }
+  .shield-wrap{
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    align-items:center;
+  }
+  .shield-visual{
+    position:relative;
+    height: 320px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  .shield-core{
+    width: 180px; height:180px;
+    position:relative;
+  }
+  .shield-core svg{ width:100%; height:100%; }
+  .shield-ring{
+    position:absolute;
+    inset:0;
+    border: 1px solid rgba(0,240,255,0.35);
+    border-radius: 50%;
+    animation: pulse-ring 3s ease-out infinite;
+  }
+  .shield-ring.r2{ animation-delay: 1s; }
+  .shield-ring.r3{ animation-delay: 2s; }
+  @keyframes pulse-ring{
+    0%{ transform: scale(0.7); opacity: 0.9; }
+    100%{ transform: scale(2.1); opacity: 0; }
+  }
+  .shield-card{
+    background: var(--panel-2);
+    border: 1px solid var(--cyan);
+    box-shadow: 0 0 30px rgba(0,240,255,0.2);
+    padding: 32px;
+  }
+  .shield-card h3{
+    font-size: 26px;
+    color: #eafcff;
+    margin-bottom: 12px;
+  }
+  .shield-card p{ color: var(--text-dim); margin-bottom: 18px; }
+  .shield-list{ display:flex; flex-direction:column; gap:10px; }
+  .shield-list li{
+    display:flex;
+    align-items:center;
+    gap: 10px;
+    font-size: 14px;
+    color: var(--text);
+  }
+  .shield-list li::before{
+    content:"▸";
+    color: var(--cyan);
+  }
+
+  /* ---------- PRICING ---------- */
+  .pricing-grid{
+    display:grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 24px;
+    align-items: stretch;
+  }
+  .price-card{
+    background: var(--panel);
+    border: 1px solid var(--line);
+    padding: 36px 30px;
+    display:flex;
+    flex-direction:column;
+    transition: transform .3s ease, box-shadow .3s ease, border-color .3s ease;
+  }
+  .price-card:hover{
+    transform: translateY(-8px);
+    border-color: var(--cyan);
+    box-shadow: 0 16px 34px rgba(0,240,255,0.16);
+  }
+  .price-card.featured{
+    border-color: var(--cyan);
+    background: linear-gradient(180deg, rgba(0,240,255,0.06), var(--panel));
+    position:relative;
+  }
+  .price-card.featured::before{
+    content: "Most Popular";
+    position:absolute;
+    top:0; right:0;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 1px;
+    padding: 6px 12px;
+    background: var(--cyan);
+    color:#001417;
+  }
+  .price-tier{
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--cyan);
+    margin-bottom: 14px;
+  }
+  .price-amount{
+    font-family: var(--font-display);
+    font-size: 40px;
+    color: #eafcff;
+    margin-bottom: 4px;
+  }
+  .price-amount span{
+    font-size: 15px;
+    color: var(--text-dim);
+    font-family: var(--font-body);
+  }
+  .price-card ul{
+    margin: 24px 0 30px;
+    display:flex;
+    flex-direction:column;
+    gap: 12px;
+    flex-grow:1;
+  }
+  .price-card ul li{
+    font-size: 14px;
+    color: var(--text-dim);
+    display:flex;
+    gap:10px;
+  }
+  .price-card ul li::before{
+    content:"✓";
+    color: var(--mint);
+  }
+
+  /* ---------- CTA / DISCORD ---------- */
+  .cta{
+    text-align:center;
+    background: var(--panel);
+    border-top: 1px solid var(--line);
+  }
+  .cta h2{ font-size: clamp(26px,4vw,38px); margin-bottom:16px; color:#eafcff; }
+  .cta p{ color: var(--text-dim); max-width: 520px; margin: 0 auto 32px; }
+
+  /* ---------- FOOTER ---------- */
+  footer{
+    border-top: 1px solid var(--line);
+    padding: 40px 0;
+  }
+  .footer-inner{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    flex-wrap:wrap;
+    gap: 20px;
+  }
+  .footer-inner p{ color: var(--text-dim); font-size: 13px; font-family: var(--font-mono); }
+  .footer-links{ display:flex; gap:20px; }
+  .footer-links a{ color: var(--text-dim); font-size: 13px; transition: color .2s ease; }
+  .footer-links a:hover{ color: var(--cyan); }
+
+  /* ---------- RESPONSIVE ---------- */
+  @media (max-width: 860px){
+    .about-inner, .shield-wrap{ grid-template-columns: 1fr; }
+    .pillars{ grid-template-columns: 1fr; }
+    .shield-visual{ height: 220px; order: -1; }
+  }
+
+  @media (max-width: 720px){
+    .nav-links, .nav-cta .btn-ghost{ display:none; }
+    .nav-toggle{ display:block; }
+    .nav-links.open{
+      display:flex;
+      flex-direction:column;
+      position:absolute;
+      top: 100%; left:0; right:0;
+      background: rgba(5,11,13,0.98);
+      border-bottom: 1px solid var(--line);
+      padding: 24px;
+      gap: 20px;
+    }
+    .about-stats{ grid-template-columns: 1fr 1fr; }
+    .hero{ padding: 110px 0 70px; }
+    section{ padding: 70px 0; }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <nav class="nav">
+    <a href="#" class="brand">
+      <span class="hexmark">
+        <svg viewBox="0 0 100 100" fill="none" stroke="#00f0ff" stroke-width="4">
+          <polygon points="50,5 90,27 90,73 50,95 10,73 10,27" />
+          <polygon points="50,28 70,40 70,62 50,74 30,62 30,40" fill="#00f0ff" opacity="0.15"/>
+        </svg>
+      </span>
+      Evolve<span class="accent">Security</span>
+    </a>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="#about">About</a></li>
+      <li><a href="#team">Team</a></li>
+      <li><a href="#services">Services</a></li>
+      <li><a href="#shield">Evolve Shield</a></li>
+      <li><a href="#pricing">Pricing</a></li>
+    </ul>
+    <div class="nav-cta">
+      <a href="#pricing" class="btn btn-ghost">View Plans</a>
+      <a href="#discord" class="btn btn-solid">Get Protected</a>
+      <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">☰</button>
+    </div>
+  </nav>
+</header>
+
+<section class="hero">
+  <div class="hero-grid-glow"></div>
+  <div class="wrap">
+    <div class="eyebrow">Evolve Server Security // Uptime Division</div>
+    <h1>Secure Your <span class="glow">Minecraft Server</span> Against Attacks</h1>
+    <p class="lead">Enterprise-grade DDoS mitigation, Linux hardening, and network defense — built specifically for Minecraft server networks that can't afford downtime.</p>
+    <div class="hero-actions">
+      <a href="#pricing" class="btn btn-solid">Secure My Server</a>
+      <a href="#discord" class="btn btn-discord">Join Discord</a>
+    </div>
+
+    <div class="pillars">
+      <div class="pillar" data-tag="L3/L7">
+        <svg class="picon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6l8-4z"/></svg>
+        <h3>DDoS Protection</h3>
+        <p>Always-on filtering that absorbs volumetric and protocol attacks before they touch your game server.</p>
+      </div>
+      <div class="pillar" data-tag="OS">
+        <svg class="picon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="4" width="18" height="16" rx="1"/><path d="M7 8h10M7 12h10M7 16h6"/></svg>
+        <h3>Linux Server Hardening</h3>
+        <p>Kernel tuning, firewall rules, and access lockdowns that close the gaps attackers look for first.</p>
+      </div>
+      <div class="pillar" data-tag="NET">
+        <svg class="picon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="5" r="2"/><circle cx="5" cy="19" r="2"/><circle cx="19" cy="19" r="2"/><path d="M12 7v5M12 12L6 17M12 12l6 5"/></svg>
+        <h3>Network Security</h3>
+        <p>Proxy routing, IP masking, and traffic inspection so your real origin server stays invisible.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="about" id="about">
+  <div class="wrap about-inner">
+    <div class="about-text">
+      <div class="eyebrow">About Evolve</div>
+      <h2>We keep Minecraft networks <span class="animated-line">online, hardened, and unshaken</span>.</h2>
+      <p>Evolve Server Security was built by people who have run large Minecraft networks themselves — and got tired of watching good servers go down to preventable attacks and bad infrastructure decisions.</p>
+      <p>Today we operate as the dedicated security and infrastructure layer for server owners who need their uptime to be non-negotiable, from small survival servers to networks running thousands of concurrent players.</p>
+      <a href="#services" class="btn btn-ghost">See What We Secure</a>
+    </div>
+    <div class="about-stats">
+      <div class="stat-card"><div class="stat-num">99.9%</div><div class="stat-label">Uptime</div></div>
+      <div class="stat-card"><div class="stat-num">24/7</div><div class="stat-label">Monitoring</div></div>
+      <div class="stat-card"><div class="stat-num">DDoS</div><div class="stat-label">Protection</div></div>
+    </div>
+  </div>
+</section>
+
+<section id="team">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow" style="justify-content:center">Leadership</div>
+      <h2>Founder &amp; Team</h2>
+      <p>The engineers and operators behind Evolve's infrastructure and incident response.</p>
+      <div class="divider"></div>
+    </div>
+    <div class="team-grid">
+
+      <div class="team-card">
+        <div class="avatar-ring">
+          <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQs8mr5yjUTZ4GAgX_c7PTivj3gX5lDhGYAFo8IN0gTsQ&s=10">
+        </div>
+        <h3>Loky</h3>
+        <div class="team-role">Head of Network Security</div>
+        <p class="team-bio">Owns DDoS mitigation design, proxy routing, and traffic inspection systems.</p>
+        <div class="team-contact">
+          <a class="icon-btn" href="#discord" aria-label="https://discord.gg/bZKY4UyQ"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 6.5a17 17 0 0 0-4.2-1.3l-.3.6a15 15 0 0 1 3.7 1.2 15.8 15.8 0 0 0-14.4 0 15 15 0 0 1 3.7-1.2l-.3-.6A17 17 0 0 0 4 6.5C1.7 10 1 13.4 1.3 16.7a17 17 0 0 0 5.1 2.6l.7-1.1a10 10 0 0 1-1.6-.8l.4-.3a12 12 0 0 0 10.2 0l.4.3a10 10 0 0 1-1.6.8l.7 1.1a17 17 0 0 0 5.1-2.6c.4-4-.5-7.3-2.7-10.2zM9 14.5c-.8 0-1.5-.8-1.5-1.7s.7-1.7 1.5-1.7 1.5.8 1.5 1.7-.7 1.7-1.5 1.7zm6 0c-.8 0-1.5-.8-1.5-1.7s.7-1.7 1.5-1.7 1.5.8 1.5 1.7-.7 1.7-1.5 1.7z"/></svg></a>
+          <a class="icon-btn" href="mrloky01@gmail.com" aria-label="Email"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="5" width="18" height="14" rx="1"/><path d="M3 6l9 7 9-7"/></svg></a>
+       
+    </div>
+      </div>
+
+</section>
+
+<section id="services">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow" style="justify-content:center">What We Do</div>
+      <h2>Services</h2>
+      <p>Full-stack protection and operations for Minecraft server infrastructure, end to end.</p>
+      <div class="divider"></div>
+    </div>
+    <div class="services-grid">
+      <div class="service-card"><div class="service-index">01</div><h3>Linux Server Hardening</h3><p>Firewall configuration, kernel tuning, and access lockdowns to close common attack surfaces.</p></div>
+      <div class="service-card"><div class="service-index">02</div><h3>Minecraft Optimization</h3><p>TPS tuning, garbage collection profiling, and plugin/config audits for smoother gameplay.</p></div>
+      <div class="service-card"><div class="service-index">03</div><h3>Proxy &amp; Network Configuration</h3><p>Velocity/BungeeCord routing, IP masking, and traffic inspection to hide your origin server.</p></div>
+      <div class="service-card"><div class="service-index">04</div><h3>Secure Access Management</h3><p>SSH key policies, role-based permissions, and 2FA enforcement across your team.</p></div>
+      <div class="service-card"><div class="service-index">05</div><h3>24/7 Monitoring</h3><p>Real-time uptime, resource, and intrusion monitoring with instant alerting.</p></div>
+      <div class="service-card"><div class="service-index">06</div><h3>Automated Backups</h3><p>Scheduled, versioned world and config backups stored off-server and encrypted.</p></div>
+      <div class="service-card"><div class="service-index">07</div><h3>Disaster Recovery</h3><p>Documented recovery playbooks so an incident becomes a footnote, not an outage.</p></div>
+      <div class="service-card"><div class="service-index">08</div><h3>Infrastructure Deployment</h3><p>Server provisioning, network topology, and scaling plans built for growth.</p></div>
+      <div class="service-card"><div class="service-index">09</div><h3>Technical Support</h3><p>Direct access to real engineers whenever something needs a human, not a ticket queue.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="shield-section" id="shield">
+  <div class="wrap shield-wrap">
+    <div class="shield-visual">
+      <div class="shield-ring"></div>
+      <div class="shield-ring r2"></div>
+      <div class="shield-ring r3"></div>
+      <div class="shield-core">
+        <svg viewBox="0 0 100 100" fill="none">
+          <polygon points="50,6 88,24 88,58 50,94 12,58 12,24" stroke="#00f0ff" stroke-width="3" fill="rgba(0,240,255,0.08)"/>
+          <path d="M50 24 L70 34 L70 56 L50 76 L30 56 L30 34 Z" stroke="#35f2b0" stroke-width="2" fill="rgba(53,242,176,0.08)"/>
+        </svg>
+      </div>
+    </div>
+    <div class="shield-card">
+      <div class="eyebrow">Signature System</div>
+      <h3>Evolve Shield™</h3>
+      <p>Our adaptive protection layer sits in front of every server we manage — filtering malicious traffic, isolating suspicious connections, and rerouting around attacks in real time, without adding latency for real players.</p>
+      <ul class="shield-list">
+        <li>Real-time traffic fingerprinting</li>
+        <li>Automatic attack pattern isolation</li>
+        <li>Zero added latency for legitimate players</li>
+        <li>Live incident dashboard for your team</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section id="pricing">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow" style="justify-content:center">Plans</div>
+      <h2>Pricing</h2>
+      <p>Choose the protection tier that matches your network's size and risk profile.</p>
+      <div class="divider"></div>
+    </div>
+    <div class="pricing-grid">
+      <div class="price-card">
+        <div class="price-tier">Starter</div>
+        <div class="price-amount">₹79 <span>/ month</span></div>
+        <ul>
+          <li>Basic DDoS protection</li>
+          <li>Linux firewall setup</li>
+          <li>Daily automated backups</li>
+          <li>Email support</li>
+        </ul>
+        <a href="https://discord.gg/GTBwCvGAT" class="btn btn-ghost">Choose Starter</a>
+      </div>
+      <div class="price-card featured">
+        <div class="price-tier">Pro</div>
+        <div class="price-amount">₹299 <span>/ month</span></div>
+        <ul>
+          <li>Advanced DDoS &amp; Evolve Shield</li>
+          <li>Full server hardening</li>
+          <li>Proxy &amp; network configuration</li>
+          <li>24/7 monitoring &amp; alerts</li>
+          <li>Priority technical support</li>
+        </ul>
+        <a href="#discord" class="btn btn-solid">Choose Pro</a>
+      </div>
+      <div class="price-card">
+        <div class="price-tier">Enterprise</div>
+        <div class="price-amount">Custom</div>
+        <ul>
+          <li>Dedicated infrastructure deployment</li>
+          <li>Custom mitigation thresholds</li>
+          <li>Disaster recovery planning</li>
+          <li>Dedicated account engineer</li>
+          <li>SLA-backed uptime guarantee</li>
+        </ul>
+        <a href="#discord" class="btn btn-ghost">Contact Sales</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="cta" id="discord">
+  <div class="wrap">
+    <div class="eyebrow" style="justify-content:center">Talk To Us</div>
+    <h2>Ready to lock down your server?</h2>
+    <p>Join our Discord to get a free infrastructure review and talk directly with our security team.</p>
+    <a href="https://discord.gg/GTBwCvGAT" target="_blank" rel="noopener" class="btn btn-discord">
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M20 6.5a17 17 0 0 0-4.2-1.3l-.3.6a15 15 0 0 1 3.7 1.2 15.8 15.8 0 0 0-14.4 0 15 15 0 0 1 3.7-1.2l-.3-.6A17 17 0 0 0 4 6.5C1.7 10 1 13.4 1.3 16.7a17 17 0 0 0 5.1 2.6l.7-1.1a10 10 0 0 1-1.6-.8l.4-.3a12 12 0 0 0 10.2 0l.4.3a10 10 0 0 1-1.6.8l.7 1.1a17 17 0 0 0 5.1-2.6c.4-4-.5-7.3-2.7-10.2zM9 14.5c-.8 0-1.5-.8-1.5-1.7s.7-1.7 1.5-1.7 1.5.8 1.5 1.7-.7 1.7-1.5 1.7zm6 0c-.8 0-1.5-.8-1.5-1.7s.7-1.7 1.5-1.7 1.5.8 1.5 1.7-.7 1.7-1.5 1.7z"/></svg>
+      Join Our Discord
+    </a>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap footer-inner">
+    <p>© 2026 Evolve Server Security. All systems monitored.</p>
+    <div class="footer-links">
+      <a href="#about">About</a>
+      <a href="#services">Services</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#discord">Discord</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Mobile nav toggle
+  const navToggle = document.getElementById('navToggle');
+  const navLinks = document.getElementById('navLinks');
+  navToggle.addEventListener('click', () => {
+    navLinks.classList.toggle('open');
+  });
+  navLinks.querySelectorAll('a').forEach(link => {
+    link.addEventListener('click', () => navLinks.classList.remove('open'));
+  });
+
+  // Scroll-reveal animation
+  const revealTargets = document.querySelectorAll('.pillar, .team-card, .service-card, .stat-card, .price-card');
+  revealTargets.forEach(el => {
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(24px)';
+    el.style.transition = 'opacity .6s ease, transform .6s ease';
+  });
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.style.opacity = '1';
+        entry.target.style.transform = 'translateY(0)';
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15 });
+
+  revealTargets.forEach(el => observer.observe(el));
+</script>
+
+</body>
+</html>
