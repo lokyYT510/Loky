@@ -963,85 +963,148 @@ Specializations
 </script>
 
 </body>
-</html>
-<!-- ===========================
-      PREMIUM BACKGROUND MUSIC
-=========================== -->
-
-<audio id="bgMusic" autoplay loop preload="auto">
-    <source src="music.mp3" type="audio/mpeg">
-    Your browser does not support audio.
-</audio>
-<button id="musicBtn">
-    <span id="musicIcon">♫</span>
-</button>
-
-<style>
-#musicBtn{
-    position:fixed;
-    bottom:20px;
-    right:20px;
-    width:48px;
-    height:48px;
-    border:none;
-    cursor:pointer;
-    color:#00ffff;
-    font-size:18px;
-    background:linear-gradient(145deg,#05141d,#0b2634);
-    clip-path:polygon(
-        25% 6%,75% 6%,
-        100% 50%,
-        75% 94%,25% 94%,
-        0% 50%
-    );
-    box-shadow:
-        0 0 8px #00eaff,
-        0 0 18px rgba(0,234,255,.8),
-        inset 0 0 10px rgba(0,255,255,.25);
-    transition:all .3s ease;
-    z-index:99999;
-    overflow:hidden;
-}
-
-#musicBtn::before{
-    content:"";
-    position:absolute;
-    inset:-60%;
-    background:linear-gradient(
-        45deg,
-        transparent,
-        rgba(0,255,255,.8),
-        transparent
-    );
-    animation:scan 2.5s linear infinite;
-}
-
-#musicBtn:hover{
-    transform:scale(1.08);
-    box-shadow:
-        0 0 12px #00ffff,
-        0 0 28px #00ffff;
-}
-
-#musicIcon{
-    position:relative;
-    z-index:2;
-    animation:pulse 2s infinite;
-}
-
-@keyframes pulse{
-    0%,100%{
-        transform:scale(1);
-        text-shadow:0 0 8px #00ffff;
-    }
-    50%{
-        transform:scale(1.15);
-        text-shadow:0 0 15px #00ffff;
-    }
-}
-
-@keyframes scan{
-    from{transform:translateX(-150%) rotate(35deg);}
-    to{transform:translateX(220%) rotate(35deg);}
-}
-</style>
+   </html>
+<!-- ========= CYBER ORB MUSIC CONTROL ========= -->
+  <audio id="bgMusic" autoplay loop>  
+  <source src="music.mp3" type="audio/mpeg">  
+</audio>  <button id="cyberMusic">  
+    <div class="ring"></div>  
+    <div class="core">  
+        <span id="musicIcon">♫</span>  
+    </div>  
+    <div class="label">MUSIC ON</div>  
+</button>  <style>  
+*{  
+    box-sizing:border-box;  
+}  
+  
+#cyberMusic{  
+    position:fixed;  
+    bottom:15px;  
+    right:15px;  
+    width:55px;  
+    height:55px;  
+    border:none;  
+    background:transparent;  
+    cursor:pointer;  
+    z-index:9999;  
+}  
+  
+.ring{  
+    position:absolute;  
+    inset:0;  
+    border-radius:50%;  
+    border:2px solid #00ffff;  
+    box-shadow:  
+        0 0 12px cyan,  
+        inset 0 0 12px cyan;  
+    animation:rotate 8s linear infinite;  
+}  
+  
+.ring::before{  
+    content:"";  
+    position:absolute;  
+    inset:6px;  
+    border-radius:50%;  
+    border:1.5px dashed rgba(0,255,255,.6);  
+    animation:rotateReverse 5s linear infinite;  
+}  
+  
+.core{  
+    position:absolute;  
+    inset:10px;  
+    border-radius:50%;  
+    background:radial-gradient(circle,#00ffff,#052030);  
+    display:flex;  
+    align-items:center;  
+    justify-content:center;  
+    color:white;  
+    font-size:18px;  
+    box-shadow:0 0 18px cyan;  
+    animation:pulse 1.5s infinite;  
+}  
+  
+.label{  
+    position:absolute;  
+    right:70px;  
+    top:50%;  
+    transform:translateY(-50%);  
+    background:rgba(0,20,30,.85);  
+    color:#00ffff;  
+    border:1px solid cyan;  
+    border-radius:20px;  
+    padding:6px 12px;  
+    font-size:10px;  
+    font-family:Arial,sans-serif;  
+    font-weight:bold;  
+    letter-spacing:1px;  
+    opacity:0;  
+    transition:.35s;  
+    pointer-events:none;  
+    box-shadow:0 0 12px cyan;  
+}  
+  
+.clickWave{  
+    position:absolute;  
+    width:100%;  
+    height:100%;  
+    border-radius:50%;  
+    border:2px solid cyan;  
+    animation:wave .7s ease-out forwards;  
+}  
+  
+@keyframes rotate{  
+    from{transform:rotate(0deg);}  
+    to{transform:rotate(360deg);}  
+}  
+  
+@keyframes rotateReverse{  
+    from{transform:rotate(360deg);}  
+    to{transform:rotate(0deg);}  
+}  
+  
+@keyframes pulse{  
+    0%,100%{transform:scale(1);}  
+    50%{transform:scale(1.12);}  
+}  
+  
+@keyframes wave{  
+    from{  
+        transform:scale(.7);  
+        opacity:1;  
+    }  
+    to{  
+        transform:scale(1.8);  
+        opacity:0;  
+    }  
+}  
+</style>  <script>  
+const audio=document.getElementById("bgMusic");  
+const btn=document.getElementById("cyberMusic");  
+const icon=document.getElementById("musicIcon");  
+const label=document.querySelector(".label");  
+  
+audio.volume=0.4;  
+  
+btn.addEventListener("click",()=>{  
+  
+const wave=document.createElement("div");  
+wave.className="clickWave";  
+btn.appendChild(wave);  
+  
+setTimeout(()=>wave.remove(),700);  
+  
+if(audio.paused){  
+    audio.play();  
+    btn.classList.remove("off");  
+    icon.innerHTML="♫";  
+    label.innerHTML="MUSIC ON";  
+}else{  
+    audio.pause();  
+    btn.classList.add("off");  
+    icon.innerHTML="✕";  
+    label.innerHTML="MUSIC OFF";  
+}  
+  
+});  
+</script>
