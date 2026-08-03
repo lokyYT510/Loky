@@ -972,90 +972,76 @@ Specializations
     <source src="music.mp3" type="audio/mpeg">
     Your browser does not support audio.
 </audio>
-
-<button id="musicBtn" title="Music">
-    <span id="musicIcon">🎵</span>
+<button id="musicBtn">
+    <span id="musicIcon">♫</span>
 </button>
 
 <style>
 #musicBtn{
     position:fixed;
-    bottom:25px;
-    right:25px;
-    width:65px;
-    height:65px;
+    bottom:20px;
+    right:20px;
+    width:48px;
+    height:48px;
     border:none;
-    border-radius:50%;
-    background:linear-gradient(135deg,#00e5ff,#008cff);
-    color:#fff;
-    font-size:28px;
     cursor:pointer;
-    display:flex;
-    align-items:center;
-    justify-content:center;
+    color:#00ffff;
+    font-size:18px;
+    background:linear-gradient(145deg,#05141d,#0b2634);
+    clip-path:polygon(
+        25% 6%,75% 6%,
+        100% 50%,
+        75% 94%,25% 94%,
+        0% 50%
+    );
     box-shadow:
-        0 0 15px #00e5ff,
-        0 0 35px rgba(0,229,255,.7),
-        0 0 60px rgba(0,229,255,.3);
-    transition:.35s ease;
+        0 0 8px #00eaff,
+        0 0 18px rgba(0,234,255,.8),
+        inset 0 0 10px rgba(0,255,255,.25);
+    transition:all .3s ease;
     z-index:99999;
-    animation:float 3s ease-in-out infinite;
+    overflow:hidden;
+}
+
+#musicBtn::before{
+    content:"";
+    position:absolute;
+    inset:-60%;
+    background:linear-gradient(
+        45deg,
+        transparent,
+        rgba(0,255,255,.8),
+        transparent
+    );
+    animation:scan 2.5s linear infinite;
 }
 
 #musicBtn:hover{
-    transform:scale(1.15) rotate(8deg);
+    transform:scale(1.08);
     box-shadow:
-        0 0 25px #00ffff,
-        0 0 50px #00ffff,
-        0 0 90px #00ffff;
-}
-
-#musicBtn:active{
-    transform:scale(.95);
-}
-
-@keyframes float{
-    0%,100%{transform:translateY(0);}
-    50%{transform:translateY(-8px);}
+        0 0 12px #00ffff,
+        0 0 28px #00ffff;
 }
 
 #musicIcon{
-    animation:spin 6s linear infinite;
+    position:relative;
+    z-index:2;
+    animation:pulse 2s infinite;
 }
 
-@keyframes spin{
-    from{transform:rotate(0deg);}
-    to{transform:rotate(360deg);}
+@keyframes pulse{
+    0%,100%{
+        transform:scale(1);
+        text-shadow:0 0 8px #00ffff;
+    }
+    50%{
+        transform:scale(1.15);
+        text-shadow:0 0 15px #00ffff;
+    }
+}
+
+@keyframes scan{
+    from{transform:translateX(-150%) rotate(35deg);}
+    to{transform:translateX(220%) rotate(35deg);}
 }
 </style>
-
-<script>
-const music = document.getElementById("bgMusic");
-const btn = document.getElementById("musicBtn");
-const icon = document.getElementById("musicIcon");
-
-music.volume = 0.35;
-
-// Try autoplay
-window.addEventListener("load", () => {
-    music.play().catch(() => {});
-});
-
-// Start music after first click anywhere if autoplay is blocked
-document.addEventListener("click", () => {
-    if (music.paused) music.play();
-}, { once: true });
-
-// Mute / Unmute
-btn.addEventListener("click", function(e){
-    e.stopPropagation();
-
-    if(music.muted){
-        music.muted = false;
-        icon.innerHTML = "🎵";
-    }else{
-        music.muted = true;
-        icon.innerHTML = "🔇";
-    }
-});
-</script>
