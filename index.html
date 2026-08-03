@@ -964,6 +964,98 @@ Specializations
 
 </body>
 </html>
-<audio id="bgMusic" autoplay loop>
+<!-- ===========================
+      PREMIUM BACKGROUND MUSIC
+=========================== -->
+
+<audio id="bgMusic" autoplay loop preload="auto">
     <source src="music.mp3" type="audio/mpeg">
+    Your browser does not support audio.
 </audio>
+
+<button id="musicBtn" title="Music">
+    <span id="musicIcon">🎵</span>
+</button>
+
+<style>
+#musicBtn{
+    position:fixed;
+    bottom:25px;
+    right:25px;
+    width:65px;
+    height:65px;
+    border:none;
+    border-radius:50%;
+    background:linear-gradient(135deg,#00e5ff,#008cff);
+    color:#fff;
+    font-size:28px;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    box-shadow:
+        0 0 15px #00e5ff,
+        0 0 35px rgba(0,229,255,.7),
+        0 0 60px rgba(0,229,255,.3);
+    transition:.35s ease;
+    z-index:99999;
+    animation:float 3s ease-in-out infinite;
+}
+
+#musicBtn:hover{
+    transform:scale(1.15) rotate(8deg);
+    box-shadow:
+        0 0 25px #00ffff,
+        0 0 50px #00ffff,
+        0 0 90px #00ffff;
+}
+
+#musicBtn:active{
+    transform:scale(.95);
+}
+
+@keyframes float{
+    0%,100%{transform:translateY(0);}
+    50%{transform:translateY(-8px);}
+}
+
+#musicIcon{
+    animation:spin 6s linear infinite;
+}
+
+@keyframes spin{
+    from{transform:rotate(0deg);}
+    to{transform:rotate(360deg);}
+}
+</style>
+
+<script>
+const music = document.getElementById("bgMusic");
+const btn = document.getElementById("musicBtn");
+const icon = document.getElementById("musicIcon");
+
+music.volume = 0.35;
+
+// Try autoplay
+window.addEventListener("load", () => {
+    music.play().catch(() => {});
+});
+
+// Start music after first click anywhere if autoplay is blocked
+document.addEventListener("click", () => {
+    if (music.paused) music.play();
+}, { once: true });
+
+// Mute / Unmute
+btn.addEventListener("click", function(e){
+    e.stopPropagation();
+
+    if(music.muted){
+        music.muted = false;
+        icon.innerHTML = "🎵";
+    }else{
+        music.muted = true;
+        icon.innerHTML = "🔇";
+    }
+});
+</script>
