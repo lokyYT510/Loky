@@ -964,3 +964,15 @@ Specializations
 
 </body>
 </html>
+
+  <audio id="bgMusic" loop>
+    <source src="music.mp3" type="audio/mpeg">
+</audio>
+
+<script>
+window.addEventListener("load", () => {
+    document.addEventListener("click", function () {
+        document.getElementById("bgMusic").play();
+    }, { once: true });
+});
+</script>
