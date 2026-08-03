@@ -964,15 +964,75 @@ Specializations
 
 </body>
 </html>
+                
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Background Music</title>
 
-  <audio id="bgMusic" loop>
+<style>
+body{
+    margin:0;
+    font-family:Arial, sans-serif;
+    background:#0a0a0a;
+    color:white;
+}
+
+#musicBtn{
+    position:fixed;
+    bottom:20px;
+    right:20px;
+    padding:12px 22px;
+    border:none;
+    border-radius:50px;
+    background:#00e5ff;
+    color:#000;
+    font-size:16px;
+    font-weight:bold;
+    cursor:pointer;
+    box-shadow:0 0 15px #00e5ff;
+    transition:0.3s;
+}
+
+#musicBtn:hover{
+    transform:scale(1.05);
+    box-shadow:0 0 25px #00e5ff;
+}
+</style>
+</head>
+
+<body>
+
+<!-- Your Website Content -->
+
+<h1 style="text-align:center;margin-top:100px;">
+🛡️ EVOLVE SERVER SECURITY
+</h1>
+
+<!-- Background Music -->
+<audio id="bgMusic" autoplay loop>
     <source src="music.mp3" type="audio/mpeg">
+    Your browser does not support audio.
 </audio>
 
+<!-- Mute / Unmute Button -->
+<button id="musicBtn" onclick="toggleMusic()">🔊 Mute</button>
+
 <script>
-window.addEventListener("load", () => {
-    document.addEventListener("click", function () {
-        document.getElementById("bgMusic").play();
-    }, { once: true });
-});
+const music = document.getElementById("bgMusic");
+const button = document.getElementById("musicBtn");
+
+function toggleMusic() {
+    if (music.muted) {
+        music.muted = false;
+        button.innerHTML = "🔊 Mute";
+    } else {
+        music.muted = true;
+        button.innerHTML = "🔇 Unmute";
+    }
+}
 </script>
+
+</body>
+</html>
