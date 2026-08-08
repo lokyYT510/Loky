@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LOKY — Developer, Creator, Builder</title>
+<meta name="description" content="LOKY is a developer, web developer, game developer, UI/UX designer and cybersecurity enthusiast. Featured project: Evolve Server Security — Minecraft server protection and Linux infrastructure hardening.">
+<link rel="canonical" href="https://loky-portfolio.vercel.app/">
+<meta property="og:title" content="LOKY — Developer. Creator. Builder.">
+<meta property="og:description" content="Websites, games, and server infrastructure built by LOKY. Featured project: Evolve Server Security.">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="robots" content="index, follow">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Person",
+  "name": "LOKY",
+  "jobTitle": "Developer, Web Developer, Game Developer, UI/UX Designer",
+  "knowsAbout": ["Web Development","Game Development","Cybersecurity","Linux Server Administration","UI/UX Design"]
+}
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#05070c;
+  --bg-panel:#0a0f1a;
+  --bg-panel-2:#0d1420;
+  --line:rgba(140,200,255,0.14);
+  --cyan:#49f2df;
+  --blue:#4f7cff;
+  --white:#eef4fb;
+  --dim:#7c8aa3;
+  --danger:#ff5c7a;
+  --font-display:'Orbitron',sans-serif;
+  --font-body:'Inter',sans-serif;
+  --font-mono:'JetBrains Mono',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{
+  background:var(--bg);
+  color:var(--white);
+  font-family:var(--font-body);
+  overflow-x:hidden;
+  line-height:1.6;
+}
+::selection{background:var(--cyan);color:#00110f;}
+a{color:inherit;text-decoration:none;}
+.wrap{max-width:1200px;margin:0 auto;padding:0 24px;}
+img,svg{max-width:100%;display:block;}
+
+/* focus */
+a:focus-visible, button:focus-visible{outline:2px solid var(--cyan);outline-offset:3px;}
+
+@media (prefers-reduced-motion: reduce){
+  *{animation-duration:0.01ms !important; animation-iteration-count:1 !important; transition-duration:0.01ms !important; scroll-behavior:auto !important;}
+}
+
+/* Background grid + noise */
+.bg-grid{
+  position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:
+    linear-gradient(var(--line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--line) 1px, transparent 1px);
+  background-size:64px 64px;
+  mask-image:radial-gradient(ellipse 80% 60% at 50% 0%, black 30%, transparent 75%);
+  opacity:0.5;
+}
+
+/* Nav */
+header{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  backdrop-filter:blur(14px);
+  background:rgba(5,7,12,0.7);
+  border-bottom:1px solid var(--line);
+}
+.nav{display:flex;align-items:center;justify-content:space-between;padding:16px 24px;}
+.logo{font-family:var(--font-display);font-weight:900;letter-spacing:0.08em;font-size:1.3rem;color:var(--white);}
+.logo span{color:var(--cyan);}
+.nav-links{display:flex;gap:32px;list-style:none;font-size:0.85rem;letter-spacing:0.08em;text-transform:uppercase;}
+.nav-links a{color:var(--dim);position:relative;padding:4px 0;transition:color .25s;}
+.nav-links a:hover, .nav-links a.active{color:var(--cyan);}
+.nav-links a.active::after{content:'';position:absolute;bottom:-6px;left:0;right:0;height:2px;background:var(--cyan);box-shadow:0 0 8px var(--cyan);}
+.burger{display:none;flex-direction:column;gap:5px;background:none;border:none;cursor:pointer;padding:8px;}
+.burger span{width:22px;height:2px;background:var(--white);display:block;transition:.3s;}
+
+@media (max-width:860px){
+  .nav-links{
+    position:fixed;top:64px;left:0;right:0;bottom:0;
+    flex-direction:column;background:rgba(5,7,12,0.98);
+    padding:32px 24px;gap:24px;
+    transform:translateX(100%);transition:transform .35s ease;
+  }
+  .nav-links.open{transform:translateX(0);}
+  .burger{display:flex;}
+}
+
+/* Hero */
+.hero{
+  position:relative;min-height:100svh;display:flex;align-items:center;
+  padding:120px 24px 80px;
+}
+#hero-canvas{position:absolute;inset:0;z-index:0;opacity:0.8;}
+.hero-inner{position:relative;z-index:2;max-width:900px;margin:0 auto;text-align:center;}
+.status-pill{
+  display:inline-flex;align-items:center;gap:8px;
+  border:1px solid var(--line);border-radius:999px;
+  padding:6px 16px;font-family:var(--font-mono);font-size:0.75rem;
+  letter-spacing:0.05em;color:var(--cyan);margin-bottom:28px;
+  background:rgba(73,242,223,0.05);
+}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--cyan);box-shadow:0 0 8px var(--cyan);animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.35;}}
+.hero h1{
+  font-family:var(--font-display);font-weight:900;
+  font-size:clamp(3.5rem,12vw,8rem);letter-spacing:0.03em;
+  line-height:0.95;
+  background:linear-gradient(180deg,#fff 20%,var(--cyan) 100%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  text-shadow:0 0 60px rgba(73,242,223,0.25);
+}
+.hero .subtitle{
+  font-family:var(--font-mono);font-size:clamp(0.85rem,2vw,1.1rem);
+  letter-spacing:0.35em;color:var(--dim);margin-top:18px;text-transform:uppercase;
+}
+.hero p.lead{
+  max-width:560px;margin:28px auto 0;color:var(--dim);font-size:1.05rem;
+}
+.hero-ctas{display:flex;gap:16px;justify-content:center;margin-top:40px;flex-wrap:wrap;}
+.btn{
+  font-family:var(--font-mono);font-size:0.85rem;letter-spacing:0.08em;text-transform:uppercase;
+  padding:14px 30px;border-radius:6px;cursor:pointer;transition:.25s;border:1px solid transparent;
+  display:inline-block;
+}
+.btn-primary{background:var(--cyan);color:#00110f;font-weight:700;box-shadow:0 0 24px rgba(73,242,223,0.35);}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 0 32px rgba(73,242,223,0.55);}
+.btn-ghost{border-color:var(--line);color:var(--white);background:rgba(255,255,255,0.02);}
+.btn-ghost:hover{border-color:var(--cyan);color:var(--cyan);}
+
+/* Section shared */
+section{position:relative;z-index:1;padding:120px 0;border-top:1px solid var(--line);}
+.eyebrow{
+  font-family:var(--font-mono);font-size:0.78rem;letter-spacing:0.25em;text-transform:uppercase;
+  color:var(--cyan);margin-bottom:14px;display:block;
+}
+h2.section-title{
+  font-family:var(--font-display);font-weight:700;font-size:clamp(2rem,5vw,3rem);
+  letter-spacing:0.02em;margin-bottom:20px;
+}
+.section-lead{color:var(--dim);max-width:640px;font-size:1.05rem;margin-bottom:56px;}
+
+.reveal{opacity:0;transform:translateY(28px);transition:opacity .7s ease,transform .7s ease;}
+.reveal.in{opacity:1;transform:none;}
+
+/* Glass card */
+.glass{
+  background:linear-gradient(160deg,rgba(255,255,255,0.045),rgba(255,255,255,0.01));
+  border:1px solid var(--line);border-radius:14px;backdrop-filter:blur(10px);
+}
+
+/* About */
+.about-grid{display:grid;grid-template-columns:1.1fr 0.9fr;gap:56px;align-items:center;}
+.about-text p{color:var(--dim);margin-bottom:18px;font-size:1.02rem;}
+.about-text strong{color:var(--white);}
+.about-panel{padding:32px;font-family:var(--font-mono);font-size:0.85rem;}
+.about-panel .line{color:var(--dim);margin-bottom:8px;}
+.about-panel .key{color:var(--cyan);}
+@media(max-width:860px){.about-grid{grid-template-columns:1fr;}}
+
+/* Skills */
+.skill-groups{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;}
+.skill-card{padding:26px;}
+.skill-card h3{font-family:var(--font-display);font-size:1.05rem;letter-spacing:0.04em;color:var(--cyan);margin-bottom:18px;}
+.skill-row{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px dashed var(--line);font-size:0.92rem;}
+.skill-row:last-child{border-bottom:none;}
+.tag{font-family:var(--font-mono);font-size:0.65rem;letter-spacing:0.05em;padding:3px 9px;border-radius:4px;text-transform:uppercase;}
+.tag-exp{background:rgba(73,242,223,0.12);color:var(--cyan);}
+.tag-build{background:rgba(79,124,255,0.15);color:#9db4ff;}
+.tag-learn{background:rgba(255,255,255,0.06);color:var(--dim);}
+
+/* Featured project */
+.featured{
+  padding:56px;position:relative;overflow:hidden;
+  background:radial-gradient(circle at 20% 20%, rgba(73,242,223,0.08), transparent 60%), linear-gradient(160deg,rgba(255,255,255,0.05),rgba(255,255,255,0.01));
+}
+.featured-top{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:24px;margin-bottom:32px;}
+.featured h3{font-family:var(--font-display);font-size:clamp(1.8rem,4vw,2.6rem);}
+.featured .kicker{font-family:var(--font-mono);color:var(--cyan);font-size:0.8rem;letter-spacing:0.15em;text-transform:uppercase;}
+.shield{width:64px;height:64px;flex-shrink:0;}
+.service-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin:32px 0;}
+.service-item{
+  font-family:var(--font-mono);font-size:0.82rem;padding:12px 14px;
+  border:1px solid var(--line);border-radius:8px;color:var(--dim);
+  display:flex;gap:10px;align-items:center;
+}
+.service-item::before{content:'▹';color:var(--cyan);}
+
+/* Timeline */
+.timeline{position:relative;padding-left:36px;}
+.timeline::before{content:'';position:absolute;left:9px;top:0;bottom:0;width:2px;background:linear-gradient(var(--cyan),var(--blue),transparent);}
+.tl-item{position:relative;padding-bottom:44px;}
+.tl-item:last-child{padding-bottom:0;}
+.tl-item::before{
+  content:'';position:absolute;left:-36px;top:4px;width:20px;height:20px;border-radius:50%;
+  background:var(--bg);border:2px solid var(--cyan);box-shadow:0 0 10px rgba(73,242,223,0.5);
+}
+.tl-num{font-family:var(--font-mono);color:var(--cyan);font-size:0.75rem;letter-spacing:0.1em;}
+.tl-item h4{font-family:var(--font-display);font-size:1.1rem;margin-top:4px;}
+
+/* Cards grid generic */
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;}
+.grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:20px;}
+@media(max-width:900px){.grid-3{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:640px){.grid-3,.grid-2{grid-template-columns:1fr;}}
+
+.card{padding:28px;transition:.3s;}
+.card:hover{border-color:rgba(73,242,223,0.4);transform:translateY(-4px);}
+.card h4{font-family:var(--font-display);font-size:1.05rem;margin-bottom:10px;}
+.card p{color:var(--dim);font-size:0.92rem;}
+
+/* Projects */
+.filter-bar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:32px;}
+.filter-btn{
+  font-family:var(--font-mono);font-size:0.75rem;letter-spacing:0.05em;text-transform:uppercase;
+  padding:8px 16px;border-radius:999px;border:1px solid var(--line);color:var(--dim);cursor:pointer;background:none;transition:.2s;
+}
+.filter-btn.active,.filter-btn:hover{border-color:var(--cyan);color:var(--cyan);}
+.project-card{overflow:hidden;padding:0;}
+.project-thumb{
+  height:150px;position:relative;
+  background:linear-gradient(135deg,var(--bg-panel-2),var(--bg-panel));
+  display:flex;align-items:center;justify-content:center;
+  border-bottom:1px solid var(--line);
+}
+.project-thumb::before{content:attr(data-idx);font-family:var(--font-display);font-size:2.6rem;color:rgba(73,242,223,0.15);}
+.project-body{padding:24px;}
+.project-cat{font-family:var(--font-mono);font-size:0.7rem;color:var(--cyan);text-transform:uppercase;letter-spacing:0.1em;}
+.project-body h4{font-family:var(--font-display);margin:8px 0 10px;font-size:1.05rem;}
+.project-body p{color:var(--dim);font-size:0.88rem;margin-bottom:16px;}
+.tech-tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px;}
+.tech-tags span{font-family:var(--font-mono);font-size:0.65rem;background:rgba(255,255,255,0.05);padding:3px 8px;border-radius:4px;color:var(--dim);}
+.view-link{font-family:var(--font-mono);font-size:0.8rem;color:var(--cyan);}
+.view-link::after{content:' →';}
+
+/* Tech wall */
+.tech-wall{display:flex;flex-wrap:wrap;gap:12px;}
+.tech-badge{
+  font-family:var(--font-mono);font-size:0.85rem;padding:10px 18px;border-radius:8px;
+  border:1px solid var(--line);color:var(--white);background:rgba(255,255,255,0.02);
+  transition:.25s;
+}
+.tech-badge:hover{border-color:var(--cyan);color:var(--cyan);box-shadow:0 0 14px rgba(73,242,223,0.25);transform:translateY(-2px);}
+
+/* Brand cinematic */
+.brand-cinematic{
+  text-align:center;position:relative;overflow:hidden;padding:160px 24px;
+}
+.brand-cinematic .ghost{
+  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  font-family:var(--font-display);font-weight:900;font-size:min(28vw,320px);
+  color:rgba(73,242,223,0.04);white-space:nowrap;letter-spacing:0.05em;z-index:0;
+  pointer-events:none;user-select:none;
+}
+.brand-cinematic h2{
+  position:relative;z-index:1;font-family:var(--font-display);font-weight:900;
+  font-size:clamp(1.8rem,5vw,3.2rem);letter-spacing:0.04em;
+}
+.brand-cinematic p{position:relative;z-index:1;color:var(--dim);max-width:520px;margin:24px auto 0;}
+
+/* Contact */
+.contact-inner{text-align:center;max-width:640px;margin:0 auto;}
+.contact-btns{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-top:36px;}
+
+/* Footer */
+footer{border-top:1px solid var(--line);padding:56px 24px 32px;text-align:center;}
+footer .logo{font-size:1.4rem;margin-bottom:8px;}
+footer .tag{display:block;color:var(--dim);font-family:var(--font-mono);font-size:0.85rem;margin-bottom:4px;}
+footer .motto{color:var(--cyan);font-family:var(--font-mono);font-size:0.75rem;letter-spacing:0.15em;margin:18px 0;text-transform:uppercase;}
+footer nav{display:flex;gap:24px;justify-content:center;flex-wrap:wrap;margin-top:20px;font-size:0.85rem;}
+footer nav a{color:var(--dim);}
+footer nav a:hover{color:var(--cyan);}
+.copyright{margin-top:32px;color:var(--dim);font-size:0.75rem;font-family:var(--font-mono);}
+
+/* Back to top */
+#toTop{
+  position:fixed;bottom:28px;right:28px;z-index:90;
+  width:46px;height:46px;border-radius:50%;
+  background:var(--cyan);color:#00110f;border:none;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;font-size:1.1rem;
+  opacity:0;pointer-events:none;transition:.3s;box-shadow:0 0 20px rgba(73,242,223,0.4);
+}
+#toTop.show{opacity:1;pointer-events:auto;}
+
+/* Loader */
+#loader{
+  position:fixed;inset:0;z-index:999;background:var(--bg);
+  display:flex;align-items:center;justify-content:center;
+  transition:opacity .6s ease, visibility .6s;
+}
+#loader span{font-family:var(--font-display);font-weight:900;font-size:2rem;color:var(--cyan);letter-spacing:0.1em;animation:pulse 1.2s infinite;}
+#loader.hide{opacity:0;visibility:hidden;}
+</style>
+</head>
+<body>
+
+<div id="loader"><span>LOKY</span></div>
+<div class="bg-grid" aria-hidden="true"></div>
+
+<header>
+  <div class="nav wrap">
+    <a href="#home" class="logo">LO<span>KY</span></a>
+    <nav>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="#home">Home</a></li>
+        <li><a href="#about">About</a></li>
+        <li><a href="#skills">Skills</a></li>
+        <li><a href="#projects">Projects</a></li>
+        <li><a href="#services">Services</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+    </nav>
+    <button class="burger" id="burger" aria-label="Toggle menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</header>
+
+<main>
+
+  <!-- HERO -->
+  <section class="hero" id="home" style="border-top:none;padding-top:120px;">
+    <canvas id="hero-canvas"></canvas>
+    <div class="hero-inner">
+      <div class="status-pill"><span class="dot"></span> AVAILABLE FOR CREATIVE PROJECTS</div>
+      <h1>LOKY</h1>
+      <div class="subtitle">Developer · Creator · Builder</div>
+      <p class="lead">I build modern websites, interactive digital experiences, games, server infrastructure, and security-focused technology projects.</p>
+      <div class="hero-ctas">
+        <a href="#projects" class="btn btn-primary">View My Work</a>
+        <a href="#contact" class="btn btn-ghost">Contact Me</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section id="about">
+    <div class="wrap">
+      <span class="eyebrow reveal">// About</span>
+      <h2 class="section-title reveal">Who is LOKY?</h2>
+      <div class="about-grid">
+        <div class="about-text reveal">
+          <p>Hi, I'm <strong>Loky</strong> — a developer and technology creator passionate about building websites, games, digital experiences, and server-focused solutions.</p>
+          <p>I enjoy exploring web development, game development, Linux, VPS infrastructure, server management, cybersecurity, UI/UX design, automation, and emerging technologies.</p>
+          <p>I believe in learning by building. Every project is an opportunity to experiment, improve my skills, and create something better.</p>
+        </div>
+        <div class="about-panel glass reveal">
+          <div class="line">$ whoami</div>
+          <div class="line" style="color:var(--white);margin-bottom:16px;">loky — developer / builder</div>
+          <div class="line"><span class="key">focus:</span> web · games · servers · security</div>
+          <div class="line"><span class="key">stack:</span> js · lua · c# · linux</div>
+          <div class="line"><span class="key">status:</span> <span class="key">online</span> — building</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SKILLS -->
+  <section id="skills">
+    <div class="wrap">
+      <span class="eyebrow reveal">// Skills</span>
+      <h2 class="section-title reveal">My Skills</h2>
+      <p class="section-lead reveal">Tools and disciplines I use across web, games, servers, and security.</p>
+      <div class="skill-groups">
+
+        <div class="skill-card glass reveal">
+          <h3>Web Development</h3>
+          <div class="skill-row">HTML <span class="tag tag-exp">Experienced</span></div>
+          <div class="skill-row">CSS <span class="tag tag-exp">Experienced</span></div>
+          <div class="skill-row">JavaScript <span class="tag tag-build">Building</span></div>
+          <div class="skill-row">Responsive Design <span class="tag tag-exp">Experienced</span></div>
+          <div class="skill-row">SEO &amp; Optimization <span class="tag tag-build">Building</span></div>
+        </div>
+
+        <div class="skill-card glass reveal">
+          <h3>Programming</h3>
+          <div class="skill-row">JavaScript <span class="tag tag-build">Building</span></div>
+          <div class="skill-row">Lua <span class="tag tag-exp">Experienced</span></div>
+          <div class="skill-row">C# <span class="tag tag-learn">Learning</span></div>
+          <div class="skill-row">Automation <span class="tag tag-learn">Learning</span></div>
+          <div class="skill-row">Problem Solving <span class="tag tag-exp">Experienced</span></div>
+        </div>
+
+        <div class="skill-card glass reveal">
+          <h3>Game Development</h3>
+          <div class="skill-row">Roblox Studio / Lua <span class="tag tag-exp">Experienced</span></div>
+          <div class="skill-row">Unity <span class="tag tag-build">Building</span></div>
+          <div class="skill-row">2D Game Dev <span class="tag tag-build">Building</span></div>
+          <div class="skill-row">Game UI &amp; Mechanics <span class="tag tag-build">Building</span></div>
+          <div class="skill-row">Pixel Art Concepts <span class="tag tag-learn">Learning</span></div>
+        </div>
+
+        <div class="skill-card glass reveal">
+          <h3>Server &amp; Infrastructure</h3>
+          <div class="skill-row">Linux / Ubuntu / Debian <span class="tag tag-exp">Experienced</span></div>
+          <div class="skill-row">VPS &amp; Hosting <span class="tag tag-exp">Experienced</span></div>
+          <div class="skill-row">Network Configuration <span class="tag tag-build">Building</span></div>
+          <div class="skill-row">Monitoring &amp; Backups <span class="tag tag-build">Building</span></div>
+          <div class="skill-row">Disaster Recovery <span class="tag tag-learn">Learning</span></div>
+        </div>
+
+        <div class="skill-card glass reveal">
+          <h3>Cybersecurity</h3>
+          <div class="skill-row">Linux Server Hardening <span class="tag tag-exp">Experienced</span></div>
+          <div class="skill-row">Minecraft Server Security <span class="tag tag-exp">Experienced</span></div>
+          <div class="skill-row">Secure Access Management <span class="tag tag-build">Building</span></div>
+          <div class="skill-row">Network Security Concepts <span class="tag tag-build">Building</span></div>
+          <div class="skill-row">Security Monitoring <span class="tag tag-learn">Learning</span></div>
+        </div>
+
+        <div class="skill-card glass reveal">
+          <h3>Design</h3>
+          <div class="skill-row">UI/UX <span class="tag tag-exp">Experienced</span></div>
+          <div class="skill-row">Futuristic Interfaces <span class="tag tag-exp">Experienced</span></div>
+          <div class="skill-row">Cybersecurity UI <span class="tag tag-build">Building</span></div>
+          <div class="skill-row">Visual Branding <span class="tag tag-build">Building</span></div>
+          <div class="skill-row">Gaming Interfaces <span class="tag tag-build">Building</span></div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURED PROJECT -->
+  <section id="services">
+    <div class="wrap">
+      <span class="eyebrow reveal">// Featured Project</span>
+      <div class="featured glass reveal">
+        <div class="featured-top">
+          <div>
+            <div class="kicker">Cybersecurity &amp; Infrastructure</div>
+            <h3>Evolve Server Security</h3>
+            <p style="color:var(--dim);margin-top:10px;max-width:520px;">Professional Minecraft server security &amp; infrastructure.</p>
+          </div>
+          <svg class="shield" viewBox="0 0 64 64" fill="none">
+            <path d="M32 4L58 14V30C58 46 47 57 32 60C17 57 6 46 6 30V14L32 4Z" stroke="#49f2df" stroke-width="2"/>
+            <path d="M22 32L29 39L44 24" stroke="#49f2df" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <p style="color:var(--dim);max-width:700px;">Evolve Server Security is a technology project focused on Minecraft server protection, Linux server hardening, infrastructure management, performance optimization, secure networking, monitoring, backups, disaster recovery, and technical support.</p>
+        <div class="service-grid">
+          <div class="service-item">Linux Server Hardening</div>
+          <div class="service-item">Minecraft Server Optimization</div>
+          <div class="service-item">Proxy &amp; Network Configuration</div>
+          <div class="service-item">Secure Access Management</div>
+          <div class="service-item">Server Monitoring</div>
+          <div class="service-item">Automated Backups</div>
+          <div class="service-item">Disaster Recovery</div>
+          <div class="service-item">Infrastructure Deployment</div>
+          <div class="service-item">Technical Support</div>
+          <div class="service-item">DDoS Protection Concepts</div>
+        </div>
+        <a href="https://evolveserversecurity.vercel.app/" target="_blank" rel="noopener" class="btn btn-primary">Visit Project</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- GAME DEV -->
+  <section>
+    <div class="wrap">
+      <span class="eyebrow reveal">// Game Development</span>
+      <h2 class="section-title reveal">Building Worlds</h2>
+      <p class="section-lead reveal">Exploring game development with Roblox Studio, Lua, Unity, and 2D game design.</p>
+      <div class="grid-2">
+        <div class="card glass reveal">
+          <h4>Roblox Game Project</h4>
+          <p>An interactive game concept featuring a custom island, village environment, characters, and unique monsters.</p>
+        </div>
+        <div class="card glass reveal">
+          <h4>Unity 2D Project</h4>
+          <p>A story-driven 2D mobile game concept with custom gameplay mechanics and visual assets.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- WEB DEV -->
+  <section>
+    <div class="wrap">
+      <span class="eyebrow reveal">// Web Development</span>
+      <h2 class="section-title reveal">Digital Experiences</h2>
+      <p class="section-lead reveal">From futuristic landing pages to interactive portfolio interfaces, I enjoy designing and developing websites that combine performance, usability, and visual identity.</p>
+      <div class="grid-3">
+        <div class="card glass reveal"><h4>Portfolio Websites</h4><p>Personal brand sites built for clarity and impact.</p></div>
+        <div class="card glass reveal"><h4>Landing Pages</h4><p>Focused pages designed to convert and communicate fast.</p></div>
+        <div class="card glass reveal"><h4>Interactive Interfaces</h4><p>Motion and interaction used with intent, not decoration.</p></div>
+        <div class="card glass reveal"><h4>Responsive Websites</h4><p>Built to work cleanly across every screen size.</p></div>
+        <div class="card glass reveal"><h4>Cybersecurity Websites</h4><p>Technical, trustworthy interfaces for security-focused brands.</p></div>
+        <div class="card glass reveal"><h4>Gaming Websites</h4><p>Bold, high-energy sites for game and community projects.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SERVER & TECH -->
+  <section>
+    <div class="wrap">
+      <span class="eyebrow reveal">// Server &amp; Technology</span>
+      <h2 class="section-title reveal">Infrastructure Command Center</h2>
+      <div class="tech-wall reveal">
+        <span class="tech-badge">Linux</span>
+        <span class="tech-badge">Ubuntu</span>
+        <span class="tech-badge">Debian</span>
+        <span class="tech-badge">VPS</span>
+        <span class="tech-badge">Server Hosting</span>
+        <span class="tech-badge">Server Management</span>
+        <span class="tech-badge">Network Configuration</span>
+        <span class="tech-badge">Monitoring</span>
+        <span class="tech-badge">Backups</span>
+        <span class="tech-badge">Security</span>
+        <span class="tech-badge">Infrastructure</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROJECTS -->
+  <section id="projects">
+    <div class="wrap">
+      <span class="eyebrow reveal">// Projects</span>
+      <h2 class="section-title reveal">Selected Work</h2>
+      <div class="filter-bar reveal">
+        <button class="filter-btn active" data-filter="all">All</button>
+        <button class="filter-btn" data-filter="Cybersecurity">Cybersecurity</button>
+        <button class="filter-btn" data-filter="Web">Web</button>
+        <button class="filter-btn" data-filter="Game">Game</button>
+        <button class="filter-btn" data-filter="AI">AI</button>
+      </div>
+      <div class="grid-3" id="projectGrid">
+
+        <div class="project-card glass reveal" data-cat="Cybersecurity">
+          <div class="project-thumb" data-idx="01"></div>
+          <div class="project-body">
+            <span class="project-cat">Cybersecurity / Infrastructure</span>
+            <h4>Evolve Server Security</h4>
+            <p>Minecraft server protection and Linux infrastructure hardening.</p>
+            <div class="tech-tags"><span>Linux</span><span>VPS</span><span>Security</span></div>
+            <a href="https://evolveserversecurity.vercel.app/" target="_blank" rel="noopener" class="view-link">View Project</a>
+          </div>
+        </div>
+
+        <div class="project-card glass reveal" data-cat="Web">
+          <div class="project-thumb" data-idx="02"></div>
+          <div class="project-body">
+            <span class="project-cat">Web Development / UI Design</span>
+            <h4>LOKY Portfolio</h4>
+            <p>This site — a futuristic personal portfolio and brand hub.</p>
+            <div class="tech-tags"><span>HTML</span><span>CSS</span><span>JS</span></div>
+            <span class="view-link">In Progress</span>
+          </div>
+        </div>
+
+        <div class="project-card glass reveal" data-cat="Game">
+          <div class="project-thumb" data-idx="03"></div>
+          <div class="project-body">
+            <span class="project-cat">Game Development</span>
+            <h4>Roblox Game Development</h4>
+            <p>Custom island and village concept with original characters.</p>
+            <div class="tech-tags"><span>Roblox Studio</span><span>Lua</span></div>
+            <span class="view-link">In Progress</span>
+          </div>
+        </div>
+
+        <div class="project-card glass reveal" data-cat="Game">
+          <div class="project-thumb" data-idx="04"></div>
+          <div class="project-body">
+            <span class="project-cat">Game Development</span>
+            <h4>Unity 2D Game</h4>
+            <p>Story-driven 2D mobile game concept and prototype.</p>
+            <div class="tech-tags"><span>Unity</span><span>C#</span></div>
+            <span class="view-link">In Progress</span>
+          </div>
+        </div>
+
+        <div class="project-card glass reveal" data-cat="AI">
+          <div class="project-thumb" data-idx="05"></div>
+          <div class="project-body">
+            <span class="project-cat">AI / Automation</span>
+            <h4>AI Assistant Concept</h4>
+            <p>Exploring automation and AI-assisted tooling concepts.</p>
+            <div class="tech-tags"><span>Automation</span><span>AI</span></div>
+            <span class="view-link">Concept</span>
+          </div>
+        </div>
+
+        <div class="project-card glass reveal" data-cat="Cybersecurity">
+          <div class="project-thumb" data-idx="06"></div>
+          <div class="project-body">
+            <span class="project-cat">Linux / VPS / Server Management</span>
+            <h4>Minecraft Server Infrastructure</h4>
+            <p>Optimized hosting and networking for Minecraft communities.</p>
+            <div class="tech-tags"><span>Linux</span><span>VPS</span></div>
+            <span class="view-link">In Progress</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- TECH STACK -->
+  <section>
+    <div class="wrap">
+      <span class="eyebrow reveal">// Technology Stack</span>
+      <h2 class="section-title reveal">Tools I Use</h2>
+      <div class="tech-wall reveal">
+        <span class="tech-badge">HTML</span>
+        <span class="tech-badge">CSS</span>
+        <span class="tech-badge">JavaScript</span>
+        <span class="tech-badge">Lua</span>
+        <span class="tech-badge">C#</span>
+        <span class="tech-badge">Unity</span>
+        <span class="tech-badge">Roblox Studio</span>
+        <span class="tech-badge">Linux</span>
+        <span class="tech-badge">Ubuntu</span>
+        <span class="tech-badge">Debian</span>
+        <span class="tech-badge">VPS</span>
+        <span class="tech-badge">GitHub</span>
+        <span class="tech-badge">Vercel</span>
+        <span class="tech-badge">SEO</span>
+        <span class="tech-badge">UI/UX</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- TIMELINE -->
+  <section>
+    <div class="wrap">
+      <span class="eyebrow reveal">// Development Journey</span>
+      <h2 class="section-title reveal">How I Got Here</h2>
+      <div class="timeline">
+        <div class="tl-item reveal"><div class="tl-num">01</div><h4>Started Exploring Technology</h4></div>
+        <div class="tl-item reveal"><div class="tl-num">02</div><h4>Learned Web Development</h4></div>
+        <div class="tl-item reveal"><div class="tl-num">03</div><h4>Started Building Websites</h4></div>
+        <div class="tl-item reveal"><div class="tl-num">04</div><h4>Explored Roblox &amp; Game Development</h4></div>
+        <div class="tl-item reveal"><div class="tl-num">05</div><h4>Started Unity &amp; 2D Game Development</h4></div>
+        <div class="tl-item reveal"><div class="tl-num">06</div><h4>Explored Linux &amp; VPS Infrastructure</h4></div>
+        <div class="tl-item reveal"><div class="tl-num">07</div><h4>Learned Server Management &amp; Security Concepts</h4></div>
+        <div class="tl-item reveal"><div class="tl-num">08</div><h4>Created Evolve Server Security</h4></div>
+        <div class="tl-item reveal"><div class="tl-num">09</div><h4>Continuing to Build &amp; Learn</h4></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- WHAT I BUILD -->
+  <section>
+    <div class="wrap">
+      <span class="eyebrow reveal">// What I Build</span>
+      <h2 class="section-title reveal">Areas of Focus</h2>
+      <div class="grid-3">
+        <div class="card glass reveal"><h4>Web Experiences</h4><p>Modern responsive websites and interfaces.</p></div>
+        <div class="card glass reveal"><h4>Game Projects</h4><p>Interactive game concepts and prototypes.</p></div>
+        <div class="card glass reveal"><h4>Server Systems</h4><p>Linux, VPS, hosting, and infrastructure projects.</p></div>
+        <div class="card glass reveal"><h4>Security Solutions</h4><p>Security-focused server and infrastructure concepts.</p></div>
+        <div class="card glass reveal"><h4>UI/UX</h4><p>Modern futuristic digital interfaces.</p></div>
+        <div class="card glass reveal"><h4>Automation</h4><p>Technology experiments involving automation and AI.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- WHY LOKY -->
+  <section>
+    <div class="wrap">
+      <span class="eyebrow reveal">// Why LOKY?</span>
+      <h2 class="section-title reveal">Build With Purpose</h2>
+      <div class="grid-3">
+        <div class="card glass reveal"><h4>Creative</h4><p>Turning ideas into unique digital experiences.</p></div>
+        <div class="card glass reveal"><h4>Curious</h4><p>Constantly exploring new technologies.</p></div>
+        <div class="card glass reveal"><h4>Builder</h4><p>Learning through real projects.</p></div>
+        <div class="card glass reveal"><h4>Security Minded</h4><p>Considering reliability and security during development.</p></div>
+        <div class="card glass reveal"><h4>Problem Solver</h4><p>Breaking technical problems into practical solutions.</p></div>
+        <div class="card glass reveal"><h4>Future Focused</h4><p>Always looking toward new technology.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BRAND CINEMATIC -->
+  <section class="brand-cinematic">
+    <div class="ghost" aria-hidden="true">LOKY</div>
+    <h2 class="reveal">BUILD. CREATE. SECURE. EVOLVE.</h2>
+    <p class="reveal">Technology isn't just something I use. It's something I build, experiment with, and continuously improve.</p>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact">
+    <div class="wrap contact-inner">
+      <span class="eyebrow reveal">// Contact</span>
+      <h2 class="section-title reveal">Let's Build Something</h2>
+      <p class="section-lead reveal" style="margin:0 auto;">Have a website idea, game concept, server project, or technology challenge? Let's create something interesting.</p>
+      <div class="contact-btns reveal">
+        <a href="mailto:hello@example.com" class="btn btn-primary">Contact Me</a>
+        <span class="btn btn-ghost" style="opacity:.5;cursor:not-allowed;" title="Add your Discord link">Discord</span>
+        <span class="btn btn-ghost" style="opacity:.5;cursor:not-allowed;" title="Add your GitHub link">GitHub</span>
+        <span class="btn btn-ghost" style="opacity:.5;cursor:not-allowed;" title="Add your YouTube link">YouTube</span>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="logo">LO<span style="color:var(--cyan);">KY</span></div>
+  <span class="tag">Developer · Creator · Builder</span>
+  <div class="motto">Build the future. Secure the system. Evolve.</div>
+  <nav>
+    <a href="#home">Home</a>
+    <a href="#about">About</a>
+    <a href="#skills">Skills</a>
+    <a href="#projects">Projects</a>
+    <a href="#services">Services</a>
+    <a href="#contact">Contact</a>
+  </nav>
+  <div class="copyright">© 2026 LOKY. All rights reserved.</div>
+</footer>
+
+<button id="toTop" aria-label="Back to top">↑</button>
+
+<script>
+// Loader
+window.addEventListener('load',()=>{
+  setTimeout(()=>document.getElementById('loader').classList.add('hide'),400);
+});
+
+// Mobile nav
+const burger=document.getElementById('burger');
+const navLinks=document.getElementById('navLinks');
+burger.addEventListener('click',()=>{
+  navLinks.classList.toggle('open');
+  const exp=navLinks.classList.contains('open');
+  burger.setAttribute('aria-expanded',exp);
+});
+navLinks.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>navLinks.classList.remove('open')));
+
+// Active nav on scroll
+const sections=document.querySelectorAll('main section[id], .hero[id]');
+const navAs=document.querySelectorAll('.nav-links a');
+const navObserver=new IntersectionObserver((entries)=>{
+  entries.forEach(entry=>{
+    if(entry.isIntersecting){
+      navAs.forEach(a=>a.classList.remove('active'));
+      const link=document.querySelector('.nav-links a[href="#'+entry.target.id+'"]');
+      if(link) link.classList.add('active');
+    }
+  });
+},{rootMargin:'-40% 0px -50% 0px'});
+sections.forEach(s=>navObserver.observe(s));
+
+// Scroll reveal
+const revealObserver=new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); revealObserver.unobserve(e.target);} });
+},{threshold:0.15});
+document.querySelectorAll('.reveal').forEach(el=>revealObserver.observe(el));
+
+// Back to top
+const toTop=document.getElementById('toTop');
+window.addEventListener('scroll',()=>{
+  toTop.classList.toggle('show', window.scrollY>600);
+});
+toTop.addEventListener('click',()=>window.scrollTo({top:0,behavior:'smooth'}));
+
+// Project filter
+const filterBtns=document.querySelectorAll('.filter-btn');
+const projectCards=document.querySelectorAll('.project-card');
+filterBtns.forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    filterBtns.forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    const f=btn.dataset.filter;
+    projectCards.forEach(c=>{
+      c.style.display=(f==='all'||c.dataset.cat===f)?'':'none';
+    });
+  });
+});
+
+// Hero network canvas — signature element: a live "server topology" graph
+const canvas=document.getElementById('hero-canvas');
+const ctx=canvas.getContext('2d');
+let w,h,nodes=[];
+const reduceMotion=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+function resize(){
+  w=canvas.width=canvas.offsetWidth*devicePixelRatio;
+  h=canvas.height=canvas.offsetHeight*devicePixelRatio;
+}
+function initNodes(){
+  nodes=[];
+  const count=Math.min(46, Math.floor((canvas.offsetWidth*canvas.offsetHeight)/26000));
+  for(let i=0;i<count;i++){
+    nodes.push({
+      x:Math.random()*w, y:Math.random()*h,
+      vx:(Math.random()-0.5)*0.25*devicePixelRatio,
+      vy:(Math.random()-0.5)*0.25*devicePixelRatio,
+      r:Math.random()*1.6+1
+    });
+  }
+}
+function draw(){
+  ctx.clearRect(0,0,w,h);
+  const maxDist=140*devicePixelRatio;
+  for(let i=0;i<nodes.length;i++){
+    const n=nodes[i];
+    n.x+=n.vx; n.y+=n.vy;
+    if(n.x<0||n.x>w) n.vx*=-1;
+    if(n.y<0||n.y>h) n.vy*=-1;
+    for(let j=i+1;j<nodes.length;j++){
+      const m=nodes[j];
+      const dx=n.x-m.x, dy=n.y-m.y;
+      const dist=Math.sqrt(dx*dx+dy*dy);
+      if(dist<maxDist){
+        ctx.strokeStyle=`rgba(73,242,223,${(1-dist/maxDist)*0.25})`;
+        ctx.lineWidth=1;
+        ctx.beginPath();ctx.moveTo(n.x,n.y);ctx.lineTo(m.x,m.y);ctx.stroke();
+      }
+    }
+  }
+  for(const n of nodes){
+    ctx.beginPath();
+    ctx.fillStyle='rgba(73,242,223,0.7)';
+    ctx.arc(n.x,n.y,n.r*devicePixelRatio,0,Math.PI*2);
+    ctx.fill();
+  }
+  if(!reduceMotion) requestAnimationFrame(draw);
+}
+function setup(){ resize(); initNodes(); draw(); }
+window.addEventListener('resize',()=>{ resize(); initNodes(); if(reduceMotion) draw(); });
+setup();
+</script>
+</body>
+</html>
